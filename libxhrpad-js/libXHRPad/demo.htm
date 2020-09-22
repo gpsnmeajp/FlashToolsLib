@@ -1,0 +1,291 @@
+<!doctype html>
+<html>
+ <head>
+  <meta name="viewport" content="width=370,user-scalable=no">
+  <meta charset="UTF-8">
+  <title>libXHRPad.js demo A</title>
+  <!--<link rel="stylesheet" type="text/css" href="css.css">--->
+  <style type="text/css">
+  <!--
+.sprite {
+    background-image: url(spritesheet.png);
+    background-repeat: no-repeat;
+    display: block;
+}
+
+.sprite-A1 {
+    width: 56px;
+    height: 56px;
+    background-position: -5px -5px;
+}
+
+.sprite-A2 {
+    width: 56px;
+    height: 56px;
+    background-position: -71px -5px;
+}
+
+.sprite-A3 {
+    width: 56px;
+    height: 56px;
+    background-position: -137px -5px;
+}
+
+.sprite-B1 {
+    width: 56px;
+    height: 56px;
+    background-position: -203px -5px;
+}
+
+.sprite-B2 {
+    width: 56px;
+    height: 56px;
+    background-position: -269px -5px;
+}
+
+.sprite-B3 {
+    width: 56px;
+    height: 56px;
+    background-position: -5px -71px;
+}
+
+.sprite-CU {
+    width: 56px;
+    height: 56px;
+    background-position: -71px -71px;
+}
+
+.sprite-D1 {
+    width: 56px;
+    height: 56px;
+    background-position: -137px -71px;
+}
+
+.sprite-D2 {
+    width: 56px;
+    height: 56px;
+    background-position: -203px -71px;
+}
+
+.sprite-D3 {
+    width: 56px;
+    height: 56px;
+    background-position: -269px -71px;
+}
+
+.sprite-E1 {
+    width: 56px;
+    height: 56px;
+    background-position: -5px -137px;
+}
+
+.sprite-E1_ {
+    width: 56px;
+    height: 56px;
+    background-position: -71px -137px;
+}
+
+.sprite-E2 {
+    width: 56px;
+    height: 56px;
+    background-position: -137px -137px;
+}
+
+.sprite-E2_ {
+    width: 56px;
+    height: 56px;
+    background-position: -203px -137px;
+}
+
+.sprite-E3 {
+    width: 56px;
+    height: 56px;
+    background-position: -269px -137px;
+}
+
+.sprite-E3_ {
+    width: 56px;
+    height: 56px;
+    background-position: -5px -203px;
+}
+
+.sprite-L1 {
+    width: 56px;
+    height: 56px;
+    background-position: -71px -203px;
+}
+
+.sprite-L2 {
+    width: 56px;
+    height: 56px;
+    background-position: -137px -203px;
+}
+
+.sprite-L3 {
+    width: 56px;
+    height: 56px;
+    background-position: -203px -203px;
+}
+
+.sprite-P1 {
+    width: 56px;
+    height: 56px;
+    background-position: -269px -203px;
+}
+
+.sprite-R1 {
+    width: 56px;
+    height: 56px;
+    background-position: -5px -269px;
+}
+
+.sprite-R2 {
+    width: 56px;
+    height: 56px;
+    background-position: -71px -269px;
+}
+
+.sprite-R3 {
+    width: 56px;
+    height: 56px;
+    background-position: -137px -269px;
+}
+
+.sprite-U1 {
+    width: 56px;
+    height: 56px;
+    background-position: -203px -269px;
+}
+
+.sprite-U2 {
+    width: 56px;
+    height: 56px;
+    background-position: -269px -269px;
+}
+
+.sprite-U3 {
+    width: 56px;
+    height: 56px;
+    background-position: -335px -5px;
+}
+
+
+  -->
+  </style>
+  
+ </head>
+ <body style="margin:0; padding: 0;">
+  <div style="text-align: center;">--- libXHRPad.js for Airio Play ---</div>
+  <div style="width: 370px; margin: 0 auto; ">
+  <table border=0>
+   <tr><td>                                </td><td><i id="U" class="sprite sprite-U1"></i></td><td>                                </td><td>                                </td><td>                                </td><td>                                </td></tr>
+   <tr><td><i id="L" class="sprite sprite-L1"></i></td><td>                                </td><td><i id="R" class="sprite sprite-R1"></i></td><td><i id="P" class="sprite sprite-P1"></i></td><td>                                </td><td><i id="A" class="sprite sprite-A1"></i></td></tr>
+   <tr><td>                                </td><td><i id="D" class="sprite sprite-D1"></i></td><td>                                </td><td>                                </td><td><i id="B" class="sprite sprite-B1"></i></td><td>                                </td></tr>
+   <tr><td><i id="CU" class="sprite sprite-CU"></i></td><td><i id="S" class="sprite sprite-E1"></i></td><td><i id="C" class="sprite sprite-E2"></i></td><td><i id="X" class="sprite sprite-E3"></i></td><td>                                </td><td>                                </td></tr>
+  </table>
+  </div>
+
+  <div style="width: 330px; margin: 0 auto; ">  
+   <div id="debug_info"></div>
+   <input type="button" onclick="xhrPad.start();" value="START">
+   <input type="button" onclick="xhrPad.stop();" value="STOP">
+   <input type="button" onclick="location.href='readme.htm'" value="RETURN">
+  </div>
+  <div style="width: 330px; margin: 0 auto; ">  
+    ※PCの場合はInternet Explorerがおすすめ
+  </div>
+
+  <!--<script src="errorCatcher.js"></script>-->
+  <script src="libXHRPad.js"></script>
+  <script>
+	"use strict"; //C言語並みの文法チェックを有効化
+
+	var imgs = {
+		up:(document.getElementById("U")),
+		down:(document.getElementById("D")),
+		left:(document.getElementById("L")),
+		right:(document.getElementById("R")),
+		b:(document.getElementById("B")),
+		a:(document.getElementById("A"))
+	};
+	var fname = {
+		up:"U",
+		down:"D",
+		left:"L",
+		right:"R",
+		b:"B",
+		a:"A"	
+	}	
+
+	var err = false;
+	var db_cnt = 0;
+	var res = "";
+	var db_interval = function(){
+		var keys = xhrPad.read();
+		var ckeys = xhrPad.readChanged();
+
+		for (var key in keys) {
+			if (keys.hasOwnProperty(key)) {
+				if((ckeys[key])&&(keys[key])) //変化があり、そして押されている時
+				{
+					imgs[key].className='sprite sprite-'+fname[key]+3;
+				}else if(keys[key]) //変化がなく、そして押されている時
+				{
+					imgs[key].className='sprite sprite-'+fname[key]+2;
+				}else{ //押されていない時
+					imgs[key].className='sprite sprite-'+fname[key]+1;
+				}
+			}
+		}
+		
+		err = false;
+		if(xhrPad.getContinuousErrorCount() > 5){
+			err = true;
+			document.getElementById("X").className='sprite sprite-E3';
+		}else{
+			document.getElementById("X").className='sprite sprite-E3_';
+		}
+
+		if(xhrPad.isSDErr()){
+			err = true;
+			document.getElementById("S").className='sprite sprite-E1';
+		}else{
+			document.getElementById("S").className='sprite sprite-E1_';
+		}
+
+		if(xhrPad.isConfigErr()){
+			err = true;
+			document.getElementById("C").className='sprite sprite-E2';
+		}else{
+			document.getElementById("C").className='sprite sprite-E2_';
+		}
+
+		if(err){
+			document.getElementById("CU").className='sprite sprite-CU';
+		}else{
+			document.getElementById("CU").className='sprite sprite-P';		
+		}
+		
+		var db_mes = "javascript実行中: " + (db_cnt++) + "\n生データ:"+xhrPad.readRaw() + "\n平均通信時間: "
+			+xhrPad.getAverageTimeMs() + "[ms]\n累計通信エラー:"+ xhrPad.getErrorCount()
+			+"\n継続エラーカウント: " + xhrPad.getContinuousErrorCount()
+			+"\nキー変化: "+ xhrPad.isChanged()
+			+"\n押されているか: "+ xhrPad.isAnyKey()
+			+"\nコールバックテスト:"+res	
+			; 
+			
+		document.getElementById("debug_info").innerText = db_mes;
+		//console.log();
+	};
+	
+	var callmeback = function(key){
+		res = ""+key + " at "+db_cnt;
+	}
+	
+	setInterval(db_interval, 32);
+	xhrPad.setKeyPressedCallback(callmeback);
+	xhrPad.start();
+
+  </script>
+ </body>
+</html>

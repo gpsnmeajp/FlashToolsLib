@@ -1,0 +1,3 @@
+SharedMemInit	KEYWORD2
+SharedMemWrite	KEYWORD2
+SharedMemRead	KEYWORD2

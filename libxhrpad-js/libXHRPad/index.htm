@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<meta charset="UTF-8">
+<title>libXHRPad.js demo B</title>
+</head>
+<body style="margin:0; padding: 0;">
+
+	
+<div id="debug_info"></div>
+<input type="button" onclick="xhrPad.start();" value="START">
+<input type="button" onclick="xhrPad.stop();" value="STOP">
+<input type="button" onclick="location.href='readme.htm'" value="RETURN">
+
+	
+<script src="errorCatcher.js"></script>
+<script src="libXHRPad.js"></script>
+<script>
+	"use strict"; //C言語並みの文法チェックを有効化
+
+	var db_cnt = 0;
+	var res = "";
+	var db_interval = function(){
+		var keys = xhrPad.read();
+		var ckeys = xhrPad.readChanged();
+		
+		var db_mes = "db_cnt: " + (db_cnt++) + "\nPad:"+xhrPad.readRaw() + "\nAve: "
+			+xhrPad.getAverageTimeMs() + "[ms]\nError/Timeout:"+ xhrPad.getErrorCount()
+			+"\n Continuous Error Count ( > 50 : may be disconnected): " + xhrPad.getContinuousErrorCount()
+			+"\n\nis SD Err: "+xhrPad.isSDErr() +"\nis Config Err: "+xhrPad.isConfigErr()
+			+"\n\nButton A: "+ keys.a +"\nButton B: "+ keys.b +"\nButton up: "+ keys.up +"\nButton down: "+ keys.down
+			+"\nButton left: "+ keys.left + "\nButton right: "+ keys.right
+			+"\n\nChanged A: "+ ckeys.a +"\nChanged B: "+ ckeys.b +"\nChanged up: "+ ckeys.up +"\nChanged down: "+ ckeys.down
+			+"\nChanged left: "+ ckeys.left + "\nChanged right: "+ ckeys.right
+			+"\n\nChanged: "+ xhrPad.isChanged()
+			+"\nAny: "+ xhrPad.isAnyKey()
+			+"\nCallback result:"+res	
+			; 
+			
+		document.getElementById("debug_info").innerText = db_mes;
+		//console.log();
+	};
+	
+	var callmeback = function(key){
+		res = ""+key + " at "+db_cnt;
+	}
+	
+	setInterval(db_interval, 32);
+	xhrPad.setKeyPressedCallback(callmeback);
+	xhrPad.start();
+
+</script>
+</body>
+</html>

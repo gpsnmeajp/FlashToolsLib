@@ -1,0 +1,151 @@
+<!doctype html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
+<meta charset="UTF-8">
+<title>libXHRPad.js readme</title>
+</head>
+<body>
+<input type="button" onclick="location.href='demo.htm'" value="デモA">
+<input type="button" onclick="location.href='index.htm'" value="デモB">
+<br>
+--- libXHRPad.js ---<br>
+説明書<br>
+ <br>
+FlashAirのパッド情報を10fpsくらいの速度(その環境における最高速度)で取得するライブラリです。<br>
+非同期で動作するため、メインの処理に遅延の影響を与えません。<br>
+また、接続をタイムアウトさせることで、Flashairの応答が遅れた時はさっさと諦めることで、高速に取得し続けます。<br>
+<br>
+・更新履歴<br>
+v0.10	XHRPad作成<br>
+v0.11	ライブラリ化<br>
+v0.12	パッド情報をオブジェクト化<br>
+v0.13	SD・CONFIGエラーを取得可能に<br>
+v0.14	パッド変化・Anyを実装<br>
+v0.15	setAddDelayを追加<br>
+v0.16	ドキュメント作成・公開<br>
+v0.17	キー押下時のコールバックを実装。ライセンスを変更(MIT→BSD-3)<br>
+	URLの生成時に日付情報を付加する方法が誤ってムダに長いURLになっていたのを修正。<br>
+	平均応答時間の算出方法を変更。エラーを平均に含まないように変更。<br>
+v0.17.1	コールバック関数のエラーを握りつぶしてしまう不具合を修正。(コンソールへ出すように)<br>
+v0.17.2 複数回startされても1回きりになるように調整。<br>
+v0.17.3 stopを実装<br>
+v0.18   demo.htmlを追加。説明書をHTML化<br>
+v0.19   demo.htmlにIEのすすめを追加。タイムアウトが200msはきつすぎたので600msに延長．
+<br>
+<br>
+・使いかた<br>
+&lt;script src="libXHRPad.js"&gt;&lt;/script&gt;で読み込ませます。<br>
+ <br>
+xhrPad.start();で取得が始まります。<br>
+注意！:大量のリクエストを投げるため、ゲームのロード前に開始すると<br>
+　ゲームのデータが読み込めなくなる場合があります。ロード後(game.start()のあとなど)に開始してください。<br>
+　散発的にデータを受信する必要がある場合は、setAddDelayを大きめに設定してください。<br>
+<br>
+注意2: 非同期のため、パッドの情報が取得できなくてもフレームが進みます。<br>
+　不公平感を解消するためには、getContinuousErrorCount()が0以外の時にはフレームを進めないようにすると、<br>
+　同期処理と同等になります。<br>
+<br>
+各関数の説明は、下の定義部分を確認してください。<br>
+<br>
+接続URLを相対参照にしているため、IPアドレスの場合、http://flashair/の場合どちらでも使えます。<br>
+ <br>
+ライセンスについてはソースコードに記載されています。<br>
+Seg_faul<br>
+<br>
+・トラブルシューティング<br>
+Q. 累計通信エラーがどんどん増えていくんですが<br>
+A. 多少の通信エラーはつきものですので、気にしない方がいいです。<br>
+<br>
+Q. 頻繁に継続エラーカウントが上がって操作不能になるんですが<br>
+A. ボタン押した瞬間になったりしませんか？<br>
+　たいてい、電源やSDカード端子の接触が悪いと起きます。<br>
+　microUSB給電の場合、USBコネクタを抑えながら操作するとマシになります。<br>
+<br>
+Q. 勝手にドンドン上がってくカウンタ何？<br>
+A. javascriptが止まってないかどうか確認するためのカウントで、<br>
+　それ以外特に意味はありません。<br>
+<br>
+・リファレンス<br>
+通信処理および状態取得<br>
+		<br>
+xhrPad.start();<br>
+	タイマーを起動し、非同期取得処理を開始します。<br>
+<br>
+xhrPad.stop();<br>
+	非同期取得処理を停止します。<br>
+<br>
+xhrPad.isSDErr();<br>
+	ホスト機器に刺さっている場合のFlashAirでのエラー情報を確認できます。<br>
+	ゲーム中で注意喚起をする場合などで使えます。<br>
+<br>
+xhrPad.isConfigErr();<br>
+	IFMODEが1ではない場合のFlashAirでのエラー情報を確認できます。<br>
+	ゲーム中で注意喚起をする場合などで使えます。<br>
+<br>
+xhrPad.getAverageTimeMs();<br>
+	読み込みにかかった平均時間を取得します。<br>
+	v0.17より、ローパスフィルタ方式にしました。これにより長時間の際に異常値にならずに済むはずですが、<br>
+	代わりに開始から十秒ほどは信頼出来ない値を吐きます。<br>
+	基本、PC(Chrome)の場合で80ms、iPadで50ms、IE9で35msほどでした。<br>
+	FlashAirへの接続台数*20 + 80と考えるといいようです。<br>
+		<br>
+xhrPad.getErrorCount();<br>
+	通信エラーの積算回数を取得します。<br>
+	割と増えますが、基本的に問題ありません。<br>
+		<br>
+xhrPad.getContinuousErrorCount();<br>
+	連続したエラー回数を取得します。<br>
+	これが3を超えると不安定、50を超えると確実に切断されています。<br>
+	接続が落ちた際のゲームの中断などに。<br>
+<br>
+xhrPad.setTimeout();<br>
+	タイムアウト時間を設定します。<br>
+	基本的に600msですが、回線状態が悪い場合は長くすると安定します。<br>
+	短くするとたまにの応答ロスの場合のロス時間が減ります。<br>
+<br>
+xhrPad.setAddDelay();<br>
+	追加ディレイ時間を設定します。<br>
+	通常だとFlashAirがリクエストに溺れて、IO以外のコンテンツが処理できなくなるため<br>
+	動的にコンテンツを読み込む場合などはsetAddDelay(500)などしてあげると溺れなくなります。<br>
+	ただしボタンに対する応答速度が悪くなります。<br>
+<br>
+<br>
+パッド情報<br>
+<br>
+xhrPad.read();<br>
+	現在のパッドの情報をオブジェクトで返却します。<br>
+	var key = read_pad();のように受け取り、<br>
+	key.a、key.b、key.up、key.down、key.left、key.rightとboolで取り出せます。<br>
+<br>
+xhrPad.readRaw();<br>
+	パッドの生情報を取得します。<br>
+	DATA項目まんまです。互換性のために用意していますが、<br>
+	基本的には上記のreadを利用することをおすすめします。<br>
+		<br>
+xhrPad.isAnyKey();<br>
+	何らかのキーが押されているかどうかboolで返却します。<br>
+<br>
+xhrPad.readChanged();<br>
+	パッドの情報の変化をオブジェクトで返却します。<br>
+	範囲は、前回readPadChangedを呼び出した時から、次にreadPadChangedを呼び出すまでの間です。<br>
+	立ち上がり、あるいは、立ち下がりを検出した場合に各キーがtrueになります。<br>
+	チョン押しを検出したい場合にどうぞ。<br>
+<br>
+xhrPad.isChanged();<br>
+	パッドの情報の変化をbool値で返します。<br>
+	範囲は、前回isPadChangedを呼び出した時から、次にisPadChangedを呼び出すまでの間です。<br>
+	立ち上がり、あるいは、立ち下がりを検出した場合に各キーがtrueになります。<br>
+<br>
+xhrPad.setKeyPressedCallback(func);<br>
+	ボタンが押された時にコールバックする関数を指定します。<br>
+	funcには、1つの文字列引数を受け取る関数をセットしてください。<br>
+	文字列には、押されたキー名(up,down,left,right,a,b)が渡されます。<br>
+	複数のキーが同時に押された場合は、保証されない順序で、それぞれのキーごとに呼び出します。<br>
+<br>
+・おまけ<br>
+&lt;script src="errorCatcher.js"&gt;&lt;/script&gt;でerrorCatcher.jsを読みこませると、<br>
+javascriptのエラーをキャッチしてダイアログとして表示します。<br>
+スマートフォン上でデバッグする場合などにどうぞ
+</body>
+</html>
