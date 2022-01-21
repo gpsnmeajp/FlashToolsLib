@@ -15,18 +15,18 @@ local FlashTime = {}
 
 --FAT形式のファイルアクセス時間を生成する
 function FlashTime.GetFATtimeFromLocalTime(Year,Month,Day,Hour,min,sec)
-	local Year_bit = bit32.band((Year - 1980),0x7F);   
-	local Month_bit = bit32.band(Month,0x0F);   
-	local Day_bit = bit32.band(Day,0x3F);   
+	local Year_bit = bit32.band((Year - 1980),0x7F);
+	local Month_bit = bit32.band(Month,0x0F);
+	local Day_bit = bit32.band(Day,0x3F);
 
-    local Hour_bit = bit32.band(Hour,0x1F);
-    local min_bit = bit32.band(min,0x3F);
-    local sec_bit = bit32.band(sec/2,0x1F);
-    
-    local YMD_bits = bit32.bor(bit32.lshift(Year_bit,9),bit32.lshift(Month_bit,5),Day_bit); 
-    local HMS_bits = bit32.bor(bit32.lshift(Hour_bit,11),bit32.lshift(min_bit,5),sec_bit);
-    
-    return YMD_bits,HMS_bits;
+	local Hour_bit = bit32.band(Hour,0x1F);
+	local min_bit = bit32.band(min,0x3F);
+	local sec_bit = bit32.band(sec/2,0x1F);
+
+	local YMD_bits = bit32.bor(bit32.lshift(Year_bit,9),bit32.lshift(Month_bit,5),Day_bit);
+	local HMS_bits = bit32.bor(bit32.lshift(Hour_bit,11),bit32.lshift(min_bit,5),sec_bit);
+
+	return YMD_bits,HMS_bits;
 end
 
 --FAT形式のファイルアクセス時間を分解する
@@ -48,21 +48,21 @@ function FlashTime.SetTime(Year,Month,Day,Hour,min,sec)
   	fa.SetCurrentTime(YMD,HMS);
 end
 
---適当なファイルを生成して時間を得る
+--時間を得る
 function FlashTime.GetTime()
-	local time_file = io.open("GetFatTimeTemporaryFile","w");
-	time_file:close();
-	local now_fat_time = lfs.attributes("GetFatTimeTemporaryFile")
+	local	DL = string.sub(fa.ReadStatusReg(),225,226)
+	local	DH = string.sub(fa.ReadStatusReg(),227,228)
+	local	TL = string.sub(fa.ReadStatusReg(),229,230)
+	local	TH = string.sub(fa.ReadStatusReg(),231,232)
+	local	z = tonumber(DH..DL..TH..TL,16)
+	local	Year,Month,Day,Hour,min,sec = FlashTime.GetLocalTimeFromFATtime(z);
 
-  	local Year,Month,Day,Hour,min,sec = FlashTime.GetLocalTimeFromFATtime(now_fat_time.modification);
-  	fa.remove("GetFatTimeTemporaryFile");
-  
 	return Year,Month,Day,Hour,min,sec;
 end
 
 --時間を日本形式で表示
 function FlashTime.ShowTime()
-	Year,Month,Day,Hour,min,sec = FlashTime.GetTime();
+	local	Year,Month,Day,Hour,min,sec = FlashTime.GetTime();
 	print(Year.."年"..Month.."月"..Day.."日"..Hour.."時"..min.."分"..sec.."秒");
 end
 
@@ -72,28 +72,23 @@ function FlashTime.SetNICT()
 	local i;
 
 	for i=0,10 do
-		b,s,h = fa.request("http://ntp-a1.nict.go.jp/cgi-bin/time");
+		b,s,h = fa.request("http://worldtimeapi.org/api/timezone/Asia/Tokyo")
 		if(s == 200)then break; end;
 		sleep(1000);
 	end
 
 	if(s ~= 200)then return nil; end;
-	local itr = string.gmatch (b,"%g+");
-	local DOTW= itr();
-	local str_moth= itr();
-	local Day= itr();
-	local hms= itr();
-	local itr_hms = string.gmatch (hms,"[^:]+");
-	local Hour = itr_hms();
-	local min = itr_hms();
-	local sec = itr_hms();
-	local Year= itr();
+	local str = cjson.decode(b);
+    itr = string.gmatch(str.datetime,"%d+");
+	local Year  = itr();
+	local Month = itr();
+	local Day   = itr();
+	local Hour  = itr();
+	local min   = itr();
+	local sec   = itr();
 
-	local month_table = {Jan=1,Feb=2,Mar=3,Apr=4,May=5,Jun=6,Jul=7,Aug=8,Sep=9,Oct=10,Nov=11,Dec=12};
-	local Month = month_table[str_moth];
-  
   	FlashTime.SetTime(Year,Month,Day,Hour,min,sec);
-  	
+
   	return true;
 end
 
